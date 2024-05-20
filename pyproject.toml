@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "coursera-bioinformatics-2024-05"
+version = "0.1.0"
+description = ""
+authors = ["JohN100x1 <JohN100x1@hotmail.co.uk>"]
+readme = "README.md"
+packages = [{include = "coursera_bioinformatics_2024_05"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.1"
+black = "^24.4.2"
+isort = "^5.13.2"
+mypy = "^1.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+line_length = 79
