@@ -85,11 +85,3 @@ def repeated_gibbs_sampler(
             best_motifs = motifs
             best_score = score
     return best_motifs
-
-
-if __name__ == "__main__":
-    dna = ["AAGCCAAA", "AATCCTGG", "GCTACTTG", "ATGTTTTG"]
-    motifs = ["CCA", "CCT", "CTT", "TTG"]
-    profile = motif_laplace_profile(motifs)
-    motifs = profile_probable_motifs(dna, profile)
-    print(" ".join(motifs))

@@ -25,6 +25,8 @@ def find_min_skew(text: str) -> list[int]:
 
 def hamming_distance(kmer1: str, kmer2: str) -> int:
     """Returns the hamming distance between two k-mers."""
+    if len(kmer1) != len(kmer2):
+        raise ValueError("kmer1 and kmer2 must be the same length.")
     return sum(1 for n1, n2 in zip(kmer1, kmer2) if n1 != n2)
 
 
