@@ -1,4 +1,4 @@
-from week_2 import (
+from course_1.week_2 import (
     approximate_count,
     approximate_match,
     find_min_skew,

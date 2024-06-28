@@ -1,7 +1,7 @@
 from itertools import product
 from math import inf, log2, prod
 
-from week_2 import frequent_words_with_mismatch, hamming_distance
+from course_1.week_2 import frequent_words_with_mismatch, hamming_distance
 
 
 def motif_enumeration(dna: list[str], k: int, d: int) -> set[str]:

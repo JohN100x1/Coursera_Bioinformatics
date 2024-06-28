@@ -1,4 +1,4 @@
-from week_3 import (
+from course_1.week_3 import (
     dna_hamming_distance,
     greedy_motif_search,
     improved_greedy_motif_search,

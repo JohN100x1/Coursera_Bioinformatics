@@ -1,6 +1,9 @@
 from random import seed
 
-from week_4 import repeated_random_motif_search, repeated_gibbs_sampler
+from course_1.week_4 import (
+    repeated_random_motif_search,
+    repeated_gibbs_sampler,
+)
 
 
 def test_repeated_random_motif_search() -> None:
