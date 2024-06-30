@@ -1,10 +1,10 @@
 from math import inf, prod
-from random import randint, choices
+from random import choices, randint
 
 from course_1.week_3 import (
     motif_laplace_profile,
-    profile_probable_kmer,
     motif_score,
+    profile_probable_kmer,
 )
 
 

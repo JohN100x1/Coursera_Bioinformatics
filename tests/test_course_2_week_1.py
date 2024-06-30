@@ -1,9 +1,9 @@
 from course_2.week_1 import (
     composition,
-    genome_path,
-    overlap_graph,
     de_bruijn_graph,
     de_bruijn_kgraph,
+    genome_path,
+    overlap_graph,
 )
 
 
