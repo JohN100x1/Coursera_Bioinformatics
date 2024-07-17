@@ -1,4 +1,4 @@
-from course_1.week_1 import (
+from course_1.module_1 import (
     better_frequent_words,
     find_clumps,
     frequent_words,

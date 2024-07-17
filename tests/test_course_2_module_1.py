@@ -1,4 +1,4 @@
-from course_2.week_1 import (
+from course_2.module_1 import (
     composition,
     de_bruijn_graph,
     de_bruijn_kgraph,

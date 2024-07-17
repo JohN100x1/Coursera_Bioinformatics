@@ -3,7 +3,7 @@ from itertools import product
 from random import choice
 from typing import Hashable
 
-from course_2.week_1 import de_bruijn_graph, genome_path
+from course_2.module_1 import de_bruijn_graph, genome_path
 
 type pair = tuple[str, str]
 

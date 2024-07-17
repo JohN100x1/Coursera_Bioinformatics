@@ -1,6 +1,6 @@
 from random import seed
 
-from course_2.week_2 import (
+from course_2.module_2 import (
     eulerian_cycle,
     eulerian_path,
     generate_contigs,

@@ -1,6 +1,6 @@
 from random import seed
 
-from course_1.week_4 import (
+from course_1.module_4 import (
     repeated_gibbs_sampler,
     repeated_random_motif_search,
 )

@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from course_1.week_1 import reverse_complement
+from course_1.module_1 import reverse_complement
 
 NUCLEOTIDES = {"A", "C", "G", "T"}
 
