@@ -163,6 +163,17 @@ def cyclic_spectrum(peptide: str) -> list[int]:
     return sorted(spectrum)
 
 
+def count_peptides(mass: int) -> int:
+    """Return the number of peptides of a given mass."""
+    masses = sorted(set(AMINO_ACID_MASS.values()))
+    ways = [1] + [0] * mass
+    for m in range(mass + 1):
+        for amino_mass in masses:
+            if m - amino_mass >= 0:
+                ways[m] += ways[m - amino_mass]
+    return ways[mass]
+
+
 def cyclo_spectrum(peptide: tuple[int, ...]) -> list[int]:
     """Returns spectrum of a cyclic peptide, given as a mass tuple."""
     prefix_mass = [0]
@@ -194,17 +205,6 @@ def lin_spectrum(peptide: tuple[int, ...]) -> list[int]:
         for j in range(i + 1, len(peptide) + 1):
             spectrum.append(prefix_mass[j] - prefix_mass[i])
     return sorted(spectrum)
-
-
-def count_peptides(mass: int) -> int:
-    """Return the number of peptides of a given mass."""
-    masses = sorted(set(AMINO_ACID_MASS.values()))
-    ways = [1] + [0] * mass
-    for m in range(mass + 1):
-        for amino_mass in masses:
-            if m - amino_mass >= 0:
-                ways[m] += ways[m - amino_mass]
-    return ways[mass]
 
 
 def cyclo_peptide_sequencing(spectrum: list[int]) -> list[str]:

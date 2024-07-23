@@ -1,12 +1,12 @@
 from course_2.module_3 import (
-    translate_rna,
-    peptide_encodes,
-    cyclic_sub_peptide_count,
-    linear_spectrum,
-    cyclic_spectrum,
     count_peptides,
-    linear_sub_peptide_count,
+    cyclic_spectrum,
+    cyclic_sub_peptide_count,
     cyclo_peptide_sequencing,
+    linear_spectrum,
+    linear_sub_peptide_count,
+    peptide_encodes,
+    translate_rna,
 )
 
 
