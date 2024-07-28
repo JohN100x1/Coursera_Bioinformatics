@@ -50,13 +50,17 @@ def trim(leaderboard: list[str], spectrum: list[int], n: int) -> list[str]:
 
 
 def cyclo_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
-    """Returns the score for a cyclic peptide against a spectrum, given as a mass tuple."""
+    """
+    Returns score for cyclic peptide against a spectrum, given as a mass tuple.
+    """
     theoretical_spectrum = cyclo_spectrum(peptide)
     return get_spectrum_score(theoretical_spectrum, spectrum)
 
 
 def lin_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
-    """Returns the score for a linear peptide against a spectrum, given as a mass tuple."""
+    """
+    Returns score for linear peptide against a spectrum, given as a mass tuple.
+    """
     theoretical_spectrum = lin_spectrum(peptide)
     return get_spectrum_score(theoretical_spectrum, spectrum)
 
@@ -64,7 +68,10 @@ def lin_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
 def trim_tuple(
     leaderboard: Iterable[tuple[int, ...]], spectrum: list[int], n: int
 ) -> list[tuple[int, ...]]:
-    """Returns peptides with the top n linear peptide scores including ties, given as mass tuples."""
+    """
+    Returns peptides with the top n linear peptide scores including ties,
+    given as mass tuples.
+    """
     if not leaderboard:
         return []
     scores = sorted(
@@ -83,7 +90,9 @@ def trim_tuple(
 def leaderboard_cyclo_peptide_sequencing(
     spectrum: list[int], n: int, masses: Iterable[int] | None = None
 ) -> set[str]:
-    """Returns the leader peptide for spectrum based on highest linear peptide score."""
+    """
+    Returns leader peptide for spectrum based on highest linear peptide score.
+    """
     if masses is None:
         masses = set(AMINO_ACID_MASS.values())
 
@@ -125,7 +134,7 @@ def convolution(spectrum: list[int]) -> list[int]:
 def convolution_cyclo_peptide_sequencing(
     spectrum: list[int], m: int, n: int
 ) -> set[str]:
-    """Returns the leader peptide for spectrum based on spectrum convolution."""
+    """Returns leader peptide for spectrum based on spectrum convolution."""
     mass_counts = Counter([m for m in convolution(spectrum) if 57 <= m <= 200])
     mass_freq = sorted(mass_counts.items(), key=lambda x: x[1], reverse=True)
 
