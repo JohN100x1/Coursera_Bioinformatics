@@ -5,6 +5,8 @@ from course_3.module_1 import (
     longest_path_dag,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_min_coins() -> None:
     assert min_num_coins(40, [50, 25, 20, 10, 5, 1]) == 2

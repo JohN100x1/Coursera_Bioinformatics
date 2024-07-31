@@ -1,8 +1,16 @@
 from collections import deque, defaultdict
+from enum import IntEnum
 from itertools import accumulate
 from typing import Hashable
 
 INT_NEG_INFINITY = -0b10000000000000000000000000000000
+
+
+class MoveEnum(IntEnum):
+    STOP = 0
+    DOWN = 1
+    RIGHT = 2
+    DIAGONAL = 3
 
 
 def min_num_coins(target: int, coins: list[int]) -> int:
@@ -34,38 +42,40 @@ def manhattan_tourist(
     return s[n][m]
 
 
-def backtrack_lcs(v: str, w: str) -> list[list[int]]:
+def backtrack_lcs(v: str, w: str) -> list[list[MoveEnum]]:
     """Returns the backtrack matrix for the lcs between v and w."""
     n, m = len(v) + 1, len(w) + 1
     s = [[0] * m for _ in range(n)]
-    backtrack = [[0] * m for _ in range(n)]
+    backtrack = [[MoveEnum.STOP] * m for _ in range(n)]
 
     for i in range(1, n):
         for j in range(1, m):
             match = 1 if v[i - 1] == w[j - 1] else 0
             prev = [
-                (s[i - 1][j], 1),
-                (s[i][j - 1], 2),
-                (s[i - 1][j - 1] + match, 3),
+                (s[i - 1][j], MoveEnum.DOWN),
+                (s[i][j - 1], MoveEnum.RIGHT),
+                (s[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
             ]
             s[i][j], backtrack[i][j] = max(prev, key=lambda x: x[0])
     return backtrack
 
 
-def output_lcs(backtrack: list[list[int]], v: str, w: str) -> str:
+def output_lcs(backtrack: list[list[MoveEnum]], v: str, w: str) -> str:
     """Returns the longest common subsequence between v_i and w_j."""
     lcs = []
     i, j = len(v), len(w)
     while i > 0 and j > 0:
-        if backtrack[i][j] == 1:
+        if backtrack[i][j] == MoveEnum.DOWN:
             i -= 1
-        elif backtrack[i][j] == 2:
+        elif backtrack[i][j] == MoveEnum.RIGHT:
             j -= 1
-        elif backtrack[i][j] == 3:
+        elif backtrack[i][j] == MoveEnum.DIAGONAL:
             lcs.append(v[i - 1])
             i -= 1
             j -= 1
-        elif i > 0 or j > 0:
+        elif backtrack[i][j] == MoveEnum.STOP:
+            break
+        else:
             raise ValueError("Invalid backtrack matrix.")
     return "".join(reversed(lcs))
 

@@ -5,6 +5,8 @@ from course_1.module_4 import (
     repeated_random_motif_search,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_repeated_random_motif_search() -> None:
     seed(0)

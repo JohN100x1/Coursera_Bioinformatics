@@ -6,6 +6,8 @@ from course_2.module_1 import (
     overlap_graph,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_composition() -> None:
     kmers = composition("CAATCCAAC", 5)

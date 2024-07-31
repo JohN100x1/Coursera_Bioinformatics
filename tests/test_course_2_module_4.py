@@ -7,6 +7,8 @@ from course_2.module_4 import (
     trim,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_cyclic_peptide_score() -> None:
     spectrum = cyclic_peptide_score(

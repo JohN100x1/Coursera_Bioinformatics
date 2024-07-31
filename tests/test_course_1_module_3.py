@@ -7,6 +7,8 @@ from course_1.module_3 import (
     profile_probable_kmer,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_motif_enumeration() -> None:
     patterns = motif_enumeration(

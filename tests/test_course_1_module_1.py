@@ -7,6 +7,8 @@ from course_1.module_1 import (
     reverse_complement,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_pattern_count() -> None:
     count = pattern_count("AGGTCATCAGG", "AGG")

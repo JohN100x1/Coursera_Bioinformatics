@@ -8,6 +8,8 @@ from course_1.module_2 import (
     neighbours,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_pattern_count() -> None:
     mins = find_min_skew("TAAAGACTGCCGAGAGGCCAACACGAGTGCTAGAACGAGGGGCGTAAA")

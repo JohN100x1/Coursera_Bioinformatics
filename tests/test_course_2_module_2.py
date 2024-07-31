@@ -11,6 +11,8 @@ from course_2.module_2 import (
     string_spelled_by_gapped_patterns,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_eulerian_cycle() -> None:
     seed(0)

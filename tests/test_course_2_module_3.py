@@ -9,6 +9,8 @@ from course_2.module_3 import (
     translate_rna,
 )
 
+# TODO: add all debug cases (small only)
+
 
 def test_translate_rna() -> None:
     string = translate_rna(
