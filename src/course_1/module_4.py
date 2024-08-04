@@ -1,11 +1,7 @@
 from math import inf, prod
 from random import choices, randint
 
-from course_1.module_3 import (
-    motif_laplace_profile,
-    motif_score,
-    profile_probable_kmer,
-)
+from course_1.module_3 import motif_profile, motif_score, profile_probable_kmer
 
 
 def profile_probable_motifs(
@@ -25,7 +21,7 @@ def randomised_motif_search(dna: list[str], k: int, t: int) -> list[str]:
     best_motifs = motifs
     best_score = motif_score(motifs)
     while True:
-        profile = motif_laplace_profile(motifs)
+        profile = motif_profile(motifs, laplace=True)
         motifs = profile_probable_motifs(dna, profile)
         score = motif_score(motifs)
         if score < best_score:
@@ -61,7 +57,7 @@ def gibbs_sampler(dna: list[str], k: int, t: int, n: int) -> list[str]:
     best_score = motif_score(motifs)
     for _ in range(n):
         i = randint(0, t - 1)
-        profile = motif_laplace_profile(motifs[:i] + motifs[i + 1 :])
+        profile = motif_profile(motifs[:i] + motifs[i + 1 :], laplace=True)
         kmers = [dna[i][idx : idx + k] for idx in range(len(dna[0]) - k + 1)]
         weights = [
             prod(profile[idx_map[char]][j] for j, char in enumerate(kmer))

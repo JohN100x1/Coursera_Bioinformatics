@@ -906,7 +906,7 @@ def output_alignment(
             j -= 1
             v_align.append("-")
             w_align.append(w[j])
-        elif backtrack[i][j] == MoveEnum.DIAGONAL:
+        elif backtrack[i][j] == MoveEnum.DOWN_RIGHT:
             i -= 1
             j -= 1
             v_align.append(v[i])
@@ -941,7 +941,7 @@ def global_alignment(
             paths = [
                 (score[i - 1][j] - in_del, MoveEnum.DOWN),
                 (score[i][j - 1] - in_del, MoveEnum.RIGHT),
-                (score[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
+                (score[i - 1][j - 1] + match, MoveEnum.DOWN_RIGHT),
             ]
             score[i][j], backtrack[i][j] = max(paths, key=lambda x: x[0])
 
@@ -985,7 +985,7 @@ def local_alignment(
                 (0, MoveEnum.STOP),
                 (score[i - 1][j] - in_del, MoveEnum.DOWN),
                 (score[i][j - 1] - in_del, MoveEnum.RIGHT),
-                (score[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
+                (score[i - 1][j - 1] + match, MoveEnum.DOWN_RIGHT),
             ]
             score[i][j], backtrack[i][j] = max(paths, key=lambda x: x[0])
             if score[i][j] > max_score:
@@ -1051,7 +1051,7 @@ def fitting_alignment(
             paths = [
                 (score[i - 1][j] - in_del, MoveEnum.DOWN),
                 (score[i][j - 1] - in_del, MoveEnum.RIGHT),
-                (score[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
+                (score[i - 1][j - 1] + match, MoveEnum.DOWN_RIGHT),
             ]
             score[i][j], backtrack[i][j] = max(paths, key=lambda x: x[0])
 
@@ -1078,7 +1078,7 @@ def overlap_alignment(
             match = reward if v[i - 1] == w[j - 1] else -mismatch
             # Important: Re-ordering this will return other solutions
             paths = [
-                (score[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
+                (score[i - 1][j - 1] + match, MoveEnum.DOWN_RIGHT),
                 (score[i][j - 1] - in_del, MoveEnum.RIGHT),
                 (score[i - 1][j] - in_del, MoveEnum.DOWN),
             ]

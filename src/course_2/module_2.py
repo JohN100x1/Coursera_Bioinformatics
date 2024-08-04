@@ -81,7 +81,7 @@ def eulerian_path[T: Hashable](adj_list: dict[T, list[T]]) -> list[T]:
 
 def in_degrees[T: Hashable](adj_list: dict[T, list[T]]) -> dict[T, int]:
     """Returns the in-degrees of an adjacency list."""
-    in_degrees_counts: dict[Hashable, int] = defaultdict(int)
+    in_degrees_counts: dict[T, int] = defaultdict(int)
     for node, neighbors in adj_list.items():
         assert in_degrees_counts[node] >= 0
         for neighbour in neighbors:

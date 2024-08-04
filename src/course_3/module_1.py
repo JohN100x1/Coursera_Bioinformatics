@@ -1,16 +1,28 @@
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 from enum import IntEnum
 from itertools import accumulate
 from typing import Hashable
 
-INT_NEG_INFINITY = -0b10000000000000000000000000000000
+INT_NEG_INFINITY = -0x80000000
 
 
 class MoveEnum(IntEnum):
     STOP = 0
     DOWN = 1
     RIGHT = 2
-    DIAGONAL = 3
+    DOWN_RIGHT = 3
+
+    # For Gapped Alignment
+    TO_LOWER = 4
+    TO_UPPER = 5
+    FROM_LOWER = 6
+    FROM_UPPER = 7
+
+    # For 3D Alignment
+    FORWARD = 8
+    DOWN_FORWARD = 9
+    RIGHT_FORWARD = 10
+    DIAGONAL = 11
 
 
 def min_num_coins(target: int, coins: list[int]) -> int:
@@ -28,18 +40,19 @@ def manhattan_tourist(
     n: int, m: int, down: list[list[int]], right: list[list[int]]
 ) -> int:
     """Returns the longest path in the Manhattan Tourist Problem."""
-    s = [[0] * (m + 1) for _ in range(n + 1)]
+    score = [[0] * (m + 1) for _ in range(n + 1)]
     for i in range(1, n + 1):
-        s[i][0] = s[i - 1][0] + down[i - 1][0]
-    s[0][1 : m + 1] = list(accumulate(right[0]))
+        score[i][0] = score[i - 1][0] + down[i - 1][0]
+    score[0][1 : m + 1] = list(accumulate(right[0]))
 
     for i in range(1, n + 1):
         for j in range(1, m + 1):
-            s[i][j] = max(
-                s[i - 1][j] + down[i - 1][j], s[i][j - 1] + right[i][j - 1]
+            score[i][j] = max(
+                score[i - 1][j] + down[i - 1][j],
+                score[i][j - 1] + right[i][j - 1],
             )
 
-    return s[n][m]
+    return score[n][m]
 
 
 def backtrack_lcs(v: str, w: str) -> list[list[MoveEnum]]:
@@ -54,7 +67,7 @@ def backtrack_lcs(v: str, w: str) -> list[list[MoveEnum]]:
             prev = [
                 (s[i - 1][j], MoveEnum.DOWN),
                 (s[i][j - 1], MoveEnum.RIGHT),
-                (s[i - 1][j - 1] + match, MoveEnum.DIAGONAL),
+                (s[i - 1][j - 1] + match, MoveEnum.DOWN_RIGHT),
             ]
             s[i][j], backtrack[i][j] = max(prev, key=lambda x: x[0])
     return backtrack
@@ -69,7 +82,7 @@ def output_lcs(backtrack: list[list[MoveEnum]], v: str, w: str) -> str:
             i -= 1
         elif backtrack[i][j] == MoveEnum.RIGHT:
             j -= 1
-        elif backtrack[i][j] == MoveEnum.DIAGONAL:
+        elif backtrack[i][j] == MoveEnum.DOWN_RIGHT:
             lcs.append(v[i - 1])
             i -= 1
             j -= 1
@@ -91,7 +104,7 @@ def topological_sort[
 ](dag: dict[T, list[tuple[T, int]]]) -> list[T]:
     """Return a list of nodes from dag in topological order."""
     nodes = set(dag).union(set(v for nodes in dag.values() for v, _ in nodes))
-    in_degree = defaultdict(int)
+    in_degree: dict[T, int] = defaultdict(int)
     for u in dag:
         for v, _ in dag[u]:
             in_degree[v] += 1
@@ -119,7 +132,7 @@ def longest_path_dag[
     dist = defaultdict(lambda: INT_NEG_INFINITY)
     dist[start] = 0
 
-    predecessor = defaultdict(lambda: -1)
+    predecessor: dict[T, T] = {}
 
     for u in topological_order:
         if dist[u] == INT_NEG_INFINITY:
@@ -131,10 +144,10 @@ def longest_path_dag[
 
     # Reconstruct path from end node
     max_path = []
-    end_node = end
-    while end_node != -1:
+    end_node: T | None = end
+    while end_node is not None:
         max_path.append(end_node)
-        end_node = predecessor[end_node]
+        end_node = predecessor.get(end_node)
     max_path.reverse()
 
     return dist[end], max_path

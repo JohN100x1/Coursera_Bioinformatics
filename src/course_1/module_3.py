@@ -21,29 +21,16 @@ def motif_enumeration(dna: list[str], k: int, d: int) -> set[str]:
     return patterns
 
 
-def motif_profile(dna: list[str]) -> list[list[float]]:
+def motif_profile(dna: list[str], laplace: bool = False) -> list[list[float]]:
     """Returns the profile matrix of dna."""
-    profile = [[] for _ in range(4)]
+    profile: list[list[float]] = [[] for _ in range(4)]
     idx_map = {"A": 0, "C": 1, "G": 2, "T": 3}
     for i in range(len(dna[0])):
-        counts = [0, 0, 0, 0]
+        counts = [1] * 4 if laplace else [0] * 4
         for text in dna:
             counts[idx_map[text[i]]] += 1
         for j, c in enumerate(counts):
             profile[j].append(c / len(dna))
-    return profile
-
-
-def motif_laplace_profile(dna: list[str]) -> list[list[float]]:
-    """Returns the profile matrix of dna with laplace rule applied."""
-    profile = [[] for _ in range(4)]
-    idx_map = {"A": 0, "C": 1, "G": 2, "T": 3}
-    for i in range(len(dna[0])):
-        counts = [1, 1, 1, 1]
-        for text in dna:
-            counts[idx_map[text[i]]] += 1
-        for j, c in enumerate(counts):
-            profile[j].append(c / (len(dna) + 4))
     return profile
 
 
@@ -97,7 +84,7 @@ def profile_probable_kmer(
 ) -> str:
     """Returns the profile-most probable kmer from text."""
     idx_map = {"A": 0, "C": 1, "G": 2, "T": 3}
-    max_prob = 0
+    max_prob = 0.0
     max_pattern = ""
     for i in range(len(text) - k + 1):
         pattern = text[i : i + k]
@@ -135,7 +122,7 @@ def improved_greedy_motif_search(dna: list[str], k: int, t: int) -> list[str]:
     for i in range(len(dna[0]) - k + 1):
         motifs = [dna[0][i : i + k]]
         for j in range(1, t):
-            profile = motif_laplace_profile(motifs)
+            profile = motif_profile(motifs, laplace=True)
             motif = profile_probable_kmer(dna[j], k, profile) or dna[j][:k]
             motifs.append(motif)
         score = motif_score(motifs)

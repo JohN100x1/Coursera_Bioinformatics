@@ -75,7 +75,7 @@ def frequent_words_with_mismatch(text: str, k: int, d: int) -> set[str]:
     Returns a set of the most frequent k-length patterns (k-mers) in text with
     mismatches.
     """
-    freq_map = defaultdict(int)
+    freq_map: dict[str, int] = defaultdict(int)
     for i in range(len(text) - k + 1):
         for neighbour in neighbours(text[i : i + k], d):
             freq_map[neighbour] += 1
@@ -88,7 +88,7 @@ def frequent_words_with_mismatch_rc(text: str, k: int, d: int) -> set[str]:
     Returns a set of the most frequent k-length patterns (k-mers) in text with
     mismatches and reverse compliments.
     """
-    freq_map = defaultdict(int)
+    freq_map: dict[str, int] = defaultdict(int)
     for i in range(len(text) - k + 1):
         for neighbour in neighbours(text[i : i + k], d):
             freq_map[neighbour] += 1

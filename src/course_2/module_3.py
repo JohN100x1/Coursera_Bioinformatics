@@ -214,7 +214,9 @@ def cyclo_peptide_sequencing(spectrum: list[int]) -> list[str]:
     def expand(peptides: set[tuple[int, ...]]) -> set[tuple[int, ...]]:
         return {p + (mass,) for p in peptides for mass in masses}
 
-    def is_consistent(sub_spectrum: list[int], full_spectrum: list[int]):
+    def is_consistent(
+        sub_spectrum: list[int], full_spectrum: list[int]
+    ) -> bool:
         sub_idx, sub_len = 0, len(sub_spectrum)
         full_idx, full_len = 0, len(full_spectrum)
         while sub_idx < sub_len and full_idx < full_len:
@@ -223,7 +225,7 @@ def cyclo_peptide_sequencing(spectrum: list[int]) -> list[str]:
             full_idx += 1
         return sub_idx == sub_len
 
-    candidates = {()}
+    candidates: set[tuple[int, ...]] = {tuple()}
     final_peptides = set()
     while candidates:
         candidates = expand(candidates)

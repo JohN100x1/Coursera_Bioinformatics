@@ -67,13 +67,13 @@ def lin_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
 
 def trim_tuple(
     leaderboard: Iterable[tuple[int, ...]], spectrum: list[int], n: int
-) -> list[tuple[int, ...]]:
+) -> set[tuple[int, ...]]:
     """
     Returns peptides with the top n linear peptide scores including ties,
     given as mass tuples.
     """
     if not leaderboard:
-        return []
+        return set()
     scores = sorted(
         [
             (peptide, lin_peptide_score(peptide, spectrum))
@@ -84,7 +84,7 @@ def trim_tuple(
     )
 
     cutoff_score = scores[min(n, len(scores)) - 1][1]
-    return [peptide for peptide, score in scores if score >= cutoff_score]
+    return {peptide for peptide, score in scores if score >= cutoff_score}
 
 
 def leaderboard_cyclo_peptide_sequencing(
@@ -99,7 +99,7 @@ def leaderboard_cyclo_peptide_sequencing(
     def expand(peptides: set[tuple[int, ...]]) -> set[tuple[int, ...]]:
         return {p + (mass,) for p in peptides for mass in masses}
 
-    leaderboard = {()}
+    leaderboard: set[tuple[int, ...]] = {tuple()}
     leaders = set()
     leader_score = -1
     while leaderboard:

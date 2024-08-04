@@ -1,10 +1,10 @@
 import pytest
 
 from course_3.module_2 import (
-    global_alignment,
-    local_alignment,
     edit_distance,
     fitting_alignment,
+    global_alignment,
+    local_alignment,
     overlap_alignment,
 )
 
@@ -21,7 +21,14 @@ from course_3.module_2 import (
         ("G", "ACATACGATG", 3, 1, 2, (-15, "------G---", "ACATACGATG")),
     ],
 )
-def test_global_alignment(v, w, reward, mismatch, in_del, expected) -> None:
+def test_global_alignment(
+    v: str,
+    w: str,
+    reward: int,
+    mismatch: int,
+    in_del: int,
+    expected: tuple[int, str, str],
+) -> None:
     assert global_alignment(v, w, reward, mismatch, in_del) == expected
 
 
@@ -37,7 +44,14 @@ def test_global_alignment(v, w, reward, mismatch, in_del, expected) -> None:
         ("CTT", "AGCATAAAGCATT", 2, 3, 1, (5, "C-TT", "CATT")),
     ],
 )
-def test_local_alignment(v, w, reward, mismatch, in_del, expected) -> None:
+def test_local_alignment(
+    v: str,
+    w: str,
+    reward: int,
+    mismatch: int,
+    in_del: int,
+    expected: tuple[int, str, str],
+) -> None:
     assert local_alignment(v, w, reward, mismatch, in_del) == expected
 
 
@@ -51,7 +65,7 @@ def test_local_alignment(v, w, reward, mismatch, in_del, expected) -> None:
         ("CGT", "CAGACGGTGACG", 9),
     ],
 )
-def test_edit_distance(v, w, distance) -> None:
+def test_edit_distance(v: str, w: str, distance: int) -> None:
     assert edit_distance(v, w) == distance
 
 
@@ -64,7 +78,9 @@ def test_edit_distance(v, w, distance) -> None:
         ("CANT", "CA", (13, "CA", "CA")),
     ],
 )
-def test_fitting_alignment(v, w, expected) -> None:
+def test_fitting_alignment(
+    v: str, w: str, expected: tuple[int, str, str]
+) -> None:
     assert fitting_alignment(v, w) == expected
 
 
@@ -80,5 +96,12 @@ def test_fitting_alignment(v, w, expected) -> None:
         ("CTT", "AGCATAAAGCATT", 2, 3, 1, (0, "--CT-T", "AGC-AT")),
     ],
 )
-def test_overlap_alignment(v, w, reward, mismatch, in_del, expected) -> None:
+def test_overlap_alignment(
+    v: str,
+    w: str,
+    reward: int,
+    mismatch: int,
+    in_del: int,
+    expected: tuple[int, str, str],
+) -> None:
     assert overlap_alignment(v, w, reward, mismatch, in_del) == expected
