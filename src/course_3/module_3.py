@@ -325,7 +325,7 @@ def output_alignment_3d(
             u_align.append(u[i])
             v_align.append(v[j])
             w_align.append(w[k])
-        elif backtrack[i][j] == MoveEnum.STOP:
+        elif backtrack[i][j][k] == MoveEnum.STOP:
             break
         else:
             raise ValueError("Invalid backtrack matrix.")
@@ -379,8 +379,3 @@ def global_alignment_3_dim(
         backtrack, u, v, w, len(u), len(v), len(w)
     )
     return score[-1][-1][-1], u_align, v_align, w_align
-
-
-if __name__ == "__main__":
-    result = global_alignment_3_dim("CGGAACTGGT", "TGAGACGGTA", "TGCGACGGCT")
-    print("\n".join(str(x) for x in result))
