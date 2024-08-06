@@ -12,7 +12,8 @@ from course_3.module_2 import (
 @pytest.mark.parametrize(
     "v, w, reward, mismatch, in_del, expected",
     [
-        # ("GAGA", "GAT", 1, 1, 2, (-1, "GAGA", "GA-T")), # TODO: fix
+        # TODO: fix global_alignment (wrong mismatch/in_del order)
+        # ("GAGA", "GAT", 1, 1, 2, (-1, "GAGA", "GA-T")),
         ("ACG", "ACT", 1, 3, 1, (0, "AC-G", "ACT-")),
         ("AT", "AG", 1, 1, 1, (0, "AT", "AG")),
         ("TCA", "CA", 2, 5, 1, (3, "TCA", "-CA")),

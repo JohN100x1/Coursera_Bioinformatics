@@ -35,10 +35,3 @@ def count_breakpoints(perm: list[int]) -> int:
     if len(perm) - perm[-1] != 0:
         count += 1
     return count
-
-
-if __name__ == "__main__":
-    txt = "+6 -12 -9 +17 +18 -4 +5 -3 +11 +19 +14 +10 +8 +15 -13 +20 +2 +7 -16 -1"
-    print(len(list(greedy_sorting([int(x) for x in txt.split(" ")]))))
-    txt = "+6 -12 -9 +17 +18 -4 +5 -3 +11 +19 +20 +10 +8 +15 -14 -13 +2 +7 -16 -1"
-    print(count_breakpoints([int(x) for x in txt.split(" ")]))

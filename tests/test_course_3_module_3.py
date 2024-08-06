@@ -52,10 +52,8 @@ def test_global_alignment_gap(
     gap_ext: int,
     expected: tuple[int, str, str],
 ) -> None:
-    assert (
-        global_alignment_gap(v, w, reward, mismatch, gap_open, gap_ext)
-        == expected
-    )
+    actual = global_alignment_gap(v, w, reward, mismatch, gap_open, gap_ext)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -88,7 +86,8 @@ def test_find_middle_edge(
     "v, w, reward, mismatch, in_del, expected",
     [
         ("GAGA", "GAT", 1, 1, 2, (-1, "GAGA", "GA-T")),
-        # ("TT", "CC", 1, 5, 1, (-4, "--TT", "CC--")), # TODO: fix
+        # TODO: fix global_alignment_linear_space (wrong mismatch/in_del order)
+        # ("TT", "CC", 1, 5, 1, (-4, "--TT", "CC--")),
         ("TT", "CC", 1, 1, 5, (-2, "TT", "CC")),
         ("GAACGATTG", "GGG", 1, 5, 1, (-3, "GAACGATTG", "G---G---G")),
         ("GCG", "CT", 2, 3, 1, (-1, "GCG-", "-C-T")),
@@ -106,10 +105,8 @@ def test_global_alignment_linear_space(
     in_del: int,
     expected: tuple[int, str, str],
 ) -> None:
-    assert (
-        global_alignment_linear_space(v, w, reward, mismatch, in_del)
-        == expected
-    )
+    actual = global_alignment_linear_space(v, w, reward, mismatch, in_del)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -120,7 +117,7 @@ def test_global_alignment_linear_space(
         #     "TCCGA",
         #     "ATGTACTG",
         #     (3, "ATATCC-G-", "---TCC-GA", "ATGTACTG-"),
-        # ), # TODO: fix
+        # ), # TODO: fix global_alignment_3_dim (moveEnum priority)
         ("A", "AT", "A", (1, "A-", "AT", "A-")),
         ("AAAAT", "CCCCT", "T", (1, "AAAAT", "CCCCT", "----T")),
         ("AT", "ACCT", "AGGGGT", (2, "A------T", "A----CCT", "AGGGG--T")),
@@ -136,7 +133,7 @@ def test_global_alignment_linear_space(
         #         "----GA-TA--TAAAACAGGGAT-A----ACTG-C----------A-A---T---GG---",
         #         "-CCTG-CT-ACT----------TTA------TG-C---CGTCTCCATA---T-----GCG",
         #     ),
-        # ), # TODO: fix
+        # ), # TODO: fix global_alignment_3_dim (moveEnum priority)
     ],
 )
 def test_global_alignment_3_dim(

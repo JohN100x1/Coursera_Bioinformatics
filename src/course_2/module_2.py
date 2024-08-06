@@ -1,11 +1,30 @@
 from collections import defaultdict
 from itertools import product
-from random import choice
+from random import choice, randint
 from typing import Hashable
 
 from course_2.module_1 import de_bruijn_graph, genome_path
 
 type pair = tuple[str, str]
+
+
+def count_in_degrees[T: Hashable](adj_list: dict[T, list[T]]) -> dict[T, int]:
+    """Returns the in-degrees of an adjacency list."""
+    in_degrees: dict[T, int] = defaultdict(int)
+    for node, neighbors in adj_list.items():
+        assert in_degrees[node] >= 0  # Ensures node exists in dict
+        for neighbour in neighbors:
+            in_degrees[neighbour] += 1
+    return dict(in_degrees)
+
+
+def count_out_degrees[T: Hashable](adj_list: dict[T, list[T]]) -> dict[T, int]:
+    """Returns the out-degrees of an adjacency list."""
+    nodes = set()
+    for u, neighbors in adj_list.items():
+        nodes.add(u)
+        nodes.update(neighbors)
+    return {node: len(adj_list.get(node, [])) for node in nodes}
 
 
 def eulerian_cycle[
@@ -14,13 +33,13 @@ def eulerian_cycle[
     """Return an Eulerian cycle for the given graph."""
 
     def get_next_node(node: T) -> T:
-        next_node = adj_list[node].pop(choice(range(len(adj_list[node]))))
+        next_node = adj_list[node].pop(randint(0, len(adj_list[node]) - 1))
         if not adj_list[node]:
-            del adj_list[node]
+            adj_list.pop(node)
         return next_node
 
     if start is None:
-        start = choice(list(adj_list.keys()))
+        start = choice(list(adj_list))
     cycle = [start]
 
     while adj_list:
@@ -42,60 +61,39 @@ def eulerian_cycle[
 
 
 def eulerian_path[T: Hashable](adj_list: dict[T, list[T]]) -> list[T]:
-    """Return an Eulerian path for the given graph."""
-    in_degrees_counts = in_degrees(adj_list)
-    out_degrees_counts = out_degrees(adj_list)
-    nodes = set(in_degrees_counts).union(out_degrees_counts)
-    unbalanced_nodes = [
-        node
-        for node in nodes
-        if in_degrees_counts.get(node, 0) != out_degrees_counts.get(node, 0)
-    ]
-    if len(unbalanced_nodes) != 2:
+    """Return an Eulerian path for a nearly balanced graph."""
+    in_degrees = count_in_degrees(adj_list)
+    out_degrees = count_out_degrees(adj_list)
+    nodes = set(in_degrees).union(out_degrees)
+    unbalanced_nodes = [u for u in nodes if in_degrees[u] != out_degrees[u]]
+
+    if len(unbalanced_nodes) < 2:
+        return eulerian_cycle(adj_list, start=next(iter(adj_list)))
+    if len(unbalanced_nodes) > 2:
         raise ValueError("Graph is not nearly balanced.")
 
-    node1, node2 = unbalanced_nodes[0], unbalanced_nodes[1]
+    start, end = unbalanced_nodes[0], unbalanced_nodes[1]
     if (
-        in_degrees_counts[node1] + 1 == out_degrees_counts[node1]
-        and in_degrees_counts[node2] == out_degrees_counts[node2] + 1
+        in_degrees[start] == out_degrees[start] + 1
+        and in_degrees[end] + 1 == out_degrees[end]
     ):
-        node1, node2 = node2, node1
-
+        start, end = end, start
     if (
-        in_degrees_counts[node1] + in_degrees_counts[node2]
-        == out_degrees_counts[node1] + out_degrees_counts[node2]
+        in_degrees[end] + in_degrees[start]
+        != out_degrees[end] + out_degrees[start]
     ):
-        if adj_list.get(node1, None) is not None:
-            adj_list[node1].append(node2)
-        else:
-            adj_list[node1] = [node2]
+        raise ValueError(f"Degree mismatch for nodes {start} and {end}")
+    # Add extra edge to end
+    if adj_list.get(end, None) is not None:
+        adj_list[end].append(start)
     else:
-        raise ValueError(f"Degree mismatch for nodes {node1} and {node2}")
-    cycle = eulerian_cycle(adj_list, start=node1)
-    index: int
+        adj_list[end] = [start]
+    # Traverse from end, then cutoff the edge from end to start
+    cycle = eulerian_cycle(adj_list, start=end)
     for i in range(1, len(cycle)):
-        if cycle[i - 1] == node1 and cycle[i] == node2:
+        if cycle[i - 1] == end and cycle[i] == start:
             return cycle[i:-1] + cycle[:i]
-    raise ValueError(f"{node1} -> {node2} does not exist.")
-
-
-def in_degrees[T: Hashable](adj_list: dict[T, list[T]]) -> dict[T, int]:
-    """Returns the in-degrees of an adjacency list."""
-    in_degrees_counts: dict[T, int] = defaultdict(int)
-    for node, neighbors in adj_list.items():
-        assert in_degrees_counts[node] >= 0
-        for neighbour in neighbors:
-            in_degrees_counts[neighbour] += 1
-    return dict(in_degrees_counts)
-
-
-def out_degrees[T: Hashable](adj_list: dict[T, list[T]]) -> dict[T, int]:
-    """Returns the out-degrees of an adjacency list."""
-    nodes = set()
-    for u, neighbors in adj_list.items():
-        nodes.add(u)
-        nodes.update(neighbors)
-    return {node: len(adj_list.get(node, [])) for node in nodes}
+    raise ValueError(f"Edge {end} -> {start} does not exist.")
 
 
 def string_reconstruction(kmers: list[str]) -> str:
@@ -131,7 +129,16 @@ def string_spelled_by_gapped_patterns(
     suffix_string = genome_path([kmer for _, kmer in kmer_pairs])
     for i in range(k + d + 1, len(prefix_string)):
         if prefix_string[i] != suffix_string[i - k - d]:
-            return "there is no string spelled by the gapped patterns"
+            msg = (
+                " " * 12
+                + prefix_string
+                + "-" * (k + d)
+                + "\n"
+                + " " * 12
+                + "-" * (k + d)
+                + suffix_string
+            )
+            raise ValueError(f"No string spelled by gapped patterns:\n{msg}")
     return prefix_string + suffix_string[-(k + d) :]
 
 
@@ -157,8 +164,8 @@ def maximal_non_branching_paths[
 ](adj_list: dict[T, list[T]]) -> list[list[T]]:
     """Returns a list non-branching paths in graph."""
     paths = []
-    in_degrees_counts = in_degrees(adj_list)
-    out_degrees_counts = out_degrees(adj_list)
+    in_degrees_counts = count_in_degrees(adj_list)
+    out_degrees_counts = count_out_degrees(adj_list)
     unexplored = set(in_degrees_counts.keys())
     for node in in_degrees_counts:
         if in_degrees_counts[node] == out_degrees_counts[node] == 1:

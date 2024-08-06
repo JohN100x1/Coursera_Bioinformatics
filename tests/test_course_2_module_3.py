@@ -1,15 +1,12 @@
 from course_2.module_3 import (
     count_peptides,
+    count_sub_peptide,
+    cyclic_peptide_sequencing,
     cyclic_spectrum,
-    cyclic_sub_peptide_count,
-    cyclo_peptide_sequencing,
     linear_spectrum,
-    linear_sub_peptide_count,
     peptide_encodes,
     translate_rna,
 )
-
-# TODO: add all debug cases (small only)
 
 
 def test_translate_rna() -> None:
@@ -27,11 +24,11 @@ def test_peptide_encode() -> None:
 
 
 def test_cyclic_sub_peptide_count() -> None:
-    assert cyclic_sub_peptide_count(31315) == 980597910
+    assert count_sub_peptide(31315) == 980597910
 
 
 def test_linear_sub_peptide_count() -> None:
-    assert linear_sub_peptide_count(29354) == 430843336
+    assert count_sub_peptide(29354, cyclic=False) == 430843336
 
 
 def test_linear_spectrum() -> None:
@@ -63,10 +60,9 @@ def test_count_peptides() -> None:
     assert count_peptides(1024) == 14712706211
 
 
-def test_cyclo_peptide_sequencing() -> None:
-    assert cyclo_peptide_sequencing(
-        [0, 113, 128, 186, 241, 299, 314, 427]
-    ) == [
+def test_cyclic_peptide_sequencing() -> None:
+    spectrum = [0, 113, 128, 186, 241, 299, 314, 427]
+    assert cyclic_peptide_sequencing(spectrum) == [
         "113-128-186",
         "113-186-128",
         "186-113-128",

@@ -1,4 +1,4 @@
-from course_3.module_4 import greedy_sorting, count_breakpoints
+from course_3.module_4 import count_breakpoints, greedy_sorting
 
 
 def test_greedy_sorting() -> None:

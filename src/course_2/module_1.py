@@ -33,7 +33,7 @@ def de_bruijn_kgraph(text: str, k: int) -> dict[str, list[str]]:
         adj_kmer = text[i : i + k]
         adj_list[kmer].append(adj_kmer)
         kmer = adj_kmer
-    return {key: sorted(vals) for key, vals in adj_list.items()}
+    return dict(adj_list)
 
 
 def de_bruijn_graph(kmers: list[str]) -> dict[str, list[str]]:
@@ -41,4 +41,4 @@ def de_bruijn_graph(kmers: list[str]) -> dict[str, list[str]]:
     adj_list = defaultdict(list)
     for kmer in kmers:
         adj_list[kmer[:-1]].append(kmer[1:])
-    return {key: sorted(vals) for key, vals in adj_list.items()}
+    return dict(adj_list)

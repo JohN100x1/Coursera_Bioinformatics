@@ -64,18 +64,18 @@ def dna_hamming_distance(pattern: str, dna: list[str]) -> int:
     )
 
 
-def median_strings(dna: list[str], k: int) -> list[str]:
+def median_strings(dna: list[str], k: int) -> set[str]:
     """Returns the median patterns in the dna."""
     dist = inf
-    medians = []
+    medians = set()
     for kmer_tuple in product("ACGT", repeat=k):
         kmer = "".join(kmer_tuple)
         kmer_dist = dna_hamming_distance(kmer, dna)
         if kmer_dist < dist:
             dist = kmer_dist
-            medians = [kmer]
+            medians = {kmer}
         elif kmer_dist == dist:
-            medians.append(kmer)
+            medians.add(kmer)
     return medians
 
 
@@ -98,31 +98,19 @@ def profile_probable_kmer(
     return max_pattern
 
 
-def greedy_motif_search(dna: list[str], k: int, t: int) -> list[str]:
-    """Return the best motifs using greedy search."""
+def greedy_motif_search(
+    dna: list[str], k: int, t: int, laplace: bool = False
+) -> list[str]:
+    """
+    Return the best motifs using greedy search.
+    laplace = True will cause pseudo-counts to be used in the motif profile.
+    """
     best_motifs = [text[:k] for text in dna]
     best_score = motif_score(best_motifs)
     for i in range(len(dna[0]) - k + 1):
         motifs = [dna[0][i : i + k]]
         for j in range(1, t):
-            profile = motif_profile(motifs)
-            motif = profile_probable_kmer(dna[j], k, profile) or dna[j][:k]
-            motifs.append(motif)
-        score = motif_score(motifs)
-        if score < best_score:
-            best_motifs = motifs
-            best_score = score
-    return best_motifs
-
-
-def improved_greedy_motif_search(dna: list[str], k: int, t: int) -> list[str]:
-    """Return the best motifs using greedy search with pseudo-counts."""
-    best_motifs = [text[:k] for text in dna]
-    best_score = motif_score(best_motifs)
-    for i in range(len(dna[0]) - k + 1):
-        motifs = [dna[0][i : i + k]]
-        for j in range(1, t):
-            profile = motif_profile(motifs, laplace=True)
+            profile = motif_profile(motifs, laplace=laplace)
             motif = profile_probable_kmer(dna[j], k, profile) or dna[j][:k]
             motifs.append(motif)
         score = motif_score(motifs)

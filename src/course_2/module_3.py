@@ -86,13 +86,14 @@ AMINO_ACID_MASS = {
     "Y": 163,
     "W": 186,
 }
+AMINO_ACID_LEN = 3
 
 
 def translate_rna(rna: str) -> str:
     """Returns the Amino Acid string from an RNA string."""
     aminos = []
-    for i in range(0, len(rna), 3):
-        amino_acid = GENETIC_CODE_MAP[rna[i : i + 3]]
+    for i in range(0, len(rna), AMINO_ACID_LEN):
+        amino_acid = GENETIC_CODE_MAP[rna[i : i + AMINO_ACID_LEN]]
         if not amino_acid:
             break
         aminos.append(amino_acid)
@@ -111,32 +112,38 @@ def peptide_encodes(pattern: str, peptide: str) -> list[str]:
     substrings = []
     rna = pattern.replace("T", "U")
     n, m = len(pattern), len(peptide)
-    for i in range(n - 3 * m + 1):
-        rna_substring = rna[i : i + 3 * m]
+    for i in range(n - AMINO_ACID_LEN * m + 1):
+        rna_substring = rna[i : i + AMINO_ACID_LEN * m]
         if peptide == translate_rna(rna_substring):
-            substrings.append(pattern[i : i + 3 * m])
+            substrings.append(pattern[i : i + AMINO_ACID_LEN * m])
         if peptide == translate_rna(reverse_complement_rna(rna_substring)):
-            substrings.append(pattern[i : i + 3 * m])
+            substrings.append(pattern[i : i + AMINO_ACID_LEN * m])
     return substrings
 
 
-def cyclic_sub_peptide_count(n: int) -> int:
-    """Returns the number of sub-peptides in a cyclic peptide of length n."""
-    return n * (n - 1)
+def count_sub_peptide(n: int, cyclic: bool = True) -> int:
+    """Returns the number of sub-peptides in a peptide of length n."""
+    return n * (n - 1) if cyclic else 1 + n * (n + 1) // 2
 
 
-def linear_sub_peptide_count(n: int) -> int:
-    """Returns the number of sub-peptides in a linear peptide of length n."""
-    return 1 + n * (n + 1) // 2
-
-
-def linear_spectrum(peptide: str) -> list[int]:
-    """Returns spectrum of a linear peptide."""
+def get_prefix_mass(peptide: str | tuple[int, ...]) -> list[int]:
+    """Returns the prefix mass of peptide."""
     prefix_mass = [0]
     mass = 0
-    for amino_acid in peptide:
-        mass += AMINO_ACID_MASS[amino_acid]
-        prefix_mass.append(mass)
+    if isinstance(peptide, str):
+        for amino_acid in peptide:
+            mass += AMINO_ACID_MASS[amino_acid]
+            prefix_mass.append(mass)
+    else:
+        for amino_acid_mass in peptide:
+            mass += amino_acid_mass
+            prefix_mass.append(mass)
+    return prefix_mass
+
+
+def linear_spectrum(peptide: str | tuple[int, ...]) -> list[int]:
+    """Returns spectrum of a linear peptide."""
+    prefix_mass = get_prefix_mass(peptide)
     spectrum = [0]
     for i in range(len(peptide)):
         for j in range(i + 1, len(peptide) + 1):
@@ -144,13 +151,9 @@ def linear_spectrum(peptide: str) -> list[int]:
     return sorted(spectrum)
 
 
-def cyclic_spectrum(peptide: str) -> list[int]:
+def cyclic_spectrum(peptide: str | tuple[int, ...]) -> list[int]:
     """Returns spectrum of a cyclic peptide."""
-    prefix_mass = [0]
-    mass = 0
-    for amino_acid in peptide:
-        mass += AMINO_ACID_MASS[amino_acid]
-        prefix_mass.append(mass)
+    prefix_mass = get_prefix_mass(peptide)
     spectrum = [0]
     n = len(peptide)
     for i in range(n):
@@ -174,40 +177,7 @@ def count_peptides(mass: int) -> int:
     return ways[mass]
 
 
-def cyclo_spectrum(peptide: tuple[int, ...]) -> list[int]:
-    """Returns spectrum of a cyclic peptide, given as a mass tuple."""
-    prefix_mass = [0]
-    mass = 0
-    for amino_acid_mass in peptide:
-        mass += amino_acid_mass
-        prefix_mass.append(mass)
-    spectrum = [0]
-    n = len(peptide)
-    for i in range(n):
-        for j in range(i + 1, len(peptide) + 1):
-            spectrum.append(prefix_mass[j] - prefix_mass[i])
-            if i > 0 and j < n:
-                spectrum.append(
-                    prefix_mass[-1] - prefix_mass[j] + prefix_mass[i]
-                )
-    return sorted(spectrum)
-
-
-def lin_spectrum(peptide: tuple[int, ...]) -> list[int]:
-    """Returns spectrum of a linear peptide, given as a mass tuple."""
-    prefix_mass = [0]
-    mass = 0
-    for amino_acid_mass in peptide:
-        mass += amino_acid_mass
-        prefix_mass.append(mass)
-    spectrum = [0]
-    for i in range(len(peptide)):
-        for j in range(i + 1, len(peptide) + 1):
-            spectrum.append(prefix_mass[j] - prefix_mass[i])
-    return sorted(spectrum)
-
-
-def cyclo_peptide_sequencing(spectrum: list[int]) -> list[str]:
+def cyclic_peptide_sequencing(spectrum: list[int]) -> list[str]:
     """Returns a list of mass strings corresponding to a peptide."""
     masses = [m for m in spectrum if 0 < m <= 186]  # Highest amino mass is 186
 
@@ -233,11 +203,11 @@ def cyclo_peptide_sequencing(spectrum: list[int]) -> list[str]:
         for peptide in candidates:
             possible = True
             if sum(peptide) == spectrum[-1]:
-                if cyclo_spectrum(peptide) == spectrum:
+                if cyclic_spectrum(peptide) == spectrum:
                     final_peptides.add(peptide)
                 possible = False
             else:
-                linear_spec = lin_spectrum(peptide)
+                linear_spec = linear_spectrum(peptide)
                 if not is_consistent(linear_spec, spectrum):
                     possible = False
             if possible:

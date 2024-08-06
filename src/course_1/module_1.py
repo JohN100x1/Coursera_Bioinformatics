@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter
 
 
 def pattern_count(text: str, pattern: str) -> int:
@@ -26,10 +26,7 @@ def frequent_words(text: str, k: int) -> set[str]:
 
 def frequency_table(text: str, k: int) -> dict[str, int]:
     """Returns a frequency map of k-length patterns (k-mers) in text."""
-    freq_map: dict[str, int] = defaultdict(int)
-    for i in range(len(text) - k + 1):
-        freq_map[text[i : i + k]] += 1
-    return freq_map
+    return Counter(text[i : i + k] for i in range(len(text) - k + 1))
 
 
 def better_frequent_words(text: str, k: int) -> set[str]:

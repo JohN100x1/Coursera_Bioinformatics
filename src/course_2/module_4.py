@@ -1,13 +1,7 @@
 from collections import Counter
 from typing import Iterable
 
-from course_2.module_3 import (
-    AMINO_ACID_MASS,
-    cyclic_spectrum,
-    cyclo_spectrum,
-    lin_spectrum,
-    linear_spectrum,
-)
+from course_2.module_3 import AMINO_ACID_MASS, cyclic_spectrum, linear_spectrum
 
 
 def get_spectrum_score(expected: list[int], spectrum: list[int]) -> int:
@@ -20,22 +14,31 @@ def get_spectrum_score(expected: list[int], spectrum: list[int]) -> int:
     )
 
 
-def cyclic_peptide_score(peptide: str, spectrum: list[int]) -> int:
+def cyclic_peptide_score(
+    peptide: str | tuple[int, ...], spectrum: list[int]
+) -> int:
     """Returns the score for a peptide against a spectrum."""
     theoretical_spectrum = cyclic_spectrum(peptide)
     return get_spectrum_score(theoretical_spectrum, spectrum)
 
 
-def linear_peptide_score(peptide: str, spectrum: list[int]) -> int:
+def linear_peptide_score(
+    peptide: str | tuple[int, ...], spectrum: list[int]
+) -> int:
     """Returns the score for a peptide against a spectrum."""
     theoretical_spectrum = linear_spectrum(peptide)
     return get_spectrum_score(theoretical_spectrum, spectrum)
 
 
-def trim(leaderboard: list[str], spectrum: list[int], n: int) -> list[str]:
-    """Returns peptides with the top n linear peptide scores including ties."""
+def trim[
+    T: str | tuple[int, ...]
+](leaderboard: Iterable[T], spectrum: list[int], n: int) -> set[T]:
+    """
+    Returns peptides with the top n linear peptide scores including ties,
+    given as mass tuples.
+    """
     if not leaderboard:
-        return []
+        return set()
     scores = sorted(
         [
             (peptide, linear_peptide_score(peptide, spectrum))
@@ -46,48 +49,10 @@ def trim(leaderboard: list[str], spectrum: list[int], n: int) -> list[str]:
     )
 
     cutoff_score = scores[min(n, len(scores)) - 1][1]
-    return [peptide for peptide, score in scores if score >= cutoff_score]
-
-
-def cyclo_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
-    """
-    Returns score for cyclic peptide against a spectrum, given as a mass tuple.
-    """
-    theoretical_spectrum = cyclo_spectrum(peptide)
-    return get_spectrum_score(theoretical_spectrum, spectrum)
-
-
-def lin_peptide_score(peptide: tuple[int, ...], spectrum: list[int]) -> int:
-    """
-    Returns score for linear peptide against a spectrum, given as a mass tuple.
-    """
-    theoretical_spectrum = lin_spectrum(peptide)
-    return get_spectrum_score(theoretical_spectrum, spectrum)
-
-
-def trim_tuple(
-    leaderboard: Iterable[tuple[int, ...]], spectrum: list[int], n: int
-) -> set[tuple[int, ...]]:
-    """
-    Returns peptides with the top n linear peptide scores including ties,
-    given as mass tuples.
-    """
-    if not leaderboard:
-        return set()
-    scores = sorted(
-        [
-            (peptide, lin_peptide_score(peptide, spectrum))
-            for peptide in leaderboard
-        ],
-        key=lambda x: x[1],
-        reverse=True,
-    )
-
-    cutoff_score = scores[min(n, len(scores)) - 1][1]
     return {peptide for peptide, score in scores if score >= cutoff_score}
 
 
-def leaderboard_cyclo_peptide_sequencing(
+def leaderboard_cyclic_peptide_sequencing(
     spectrum: list[int], n: int, masses: Iterable[int] | None = None
 ) -> set[str]:
     """
@@ -107,7 +72,7 @@ def leaderboard_cyclo_peptide_sequencing(
         remaining = set()
         for peptide in leaderboard:
             if sum(peptide) == spectrum[-1]:
-                score = cyclo_peptide_score(peptide, spectrum)
+                score = cyclic_peptide_score(peptide, spectrum)
                 if score > leader_score:
                     leaders = {peptide}
                     leader_score = score
@@ -116,7 +81,7 @@ def leaderboard_cyclo_peptide_sequencing(
                 remaining.add(peptide)
             elif sum(peptide) < spectrum[-1]:
                 remaining.add(peptide)
-        leaderboard = trim_tuple(remaining, spectrum, n)
+        leaderboard = trim(remaining, spectrum, n)
     return {"-".join(str(x) for x in leader) for leader in leaders}
 
 
@@ -131,7 +96,7 @@ def convolution(spectrum: list[int]) -> list[int]:
     ]
 
 
-def convolution_cyclo_peptide_sequencing(
+def convolution_cyclic_peptide_sequencing(
     spectrum: list[int], m: int, n: int
 ) -> set[str]:
     """Returns leader peptide for spectrum based on spectrum convolution."""
@@ -140,4 +105,4 @@ def convolution_cyclo_peptide_sequencing(
 
     cutoff_freq = mass_freq[min(m, len(mass_freq)) - 1][1]
     masses = [mass for mass, freq in mass_freq if freq >= cutoff_freq]
-    return leaderboard_cyclo_peptide_sequencing(spectrum, n, masses)
+    return leaderboard_cyclic_peptide_sequencing(spectrum, n, masses)
